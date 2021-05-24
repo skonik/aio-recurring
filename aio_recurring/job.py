@@ -1,6 +1,4 @@
-import asyncio
 from asyncio import get_running_loop
-from datetime import datetime
 
 
 def reschedule_job(func, delay, *args):
@@ -39,20 +37,3 @@ def recurring_job(every: int):
 def run_recurring_jobs():
     loop = get_running_loop()
     loop.call_soon(schedule_all_jobs)
-
-
-async def main():
-    run_recurring_jobs()
-
-
-if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-    loop.create_task(main())
-    loop.run_forever()
-
-
-@recurring_job(every=1)
-async def print_hello():
-    print("HELo!: ")
-    print(datetime.now())
-    print('\n')
