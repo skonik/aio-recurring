@@ -15,14 +15,18 @@ def schedule_all_jobs():
         reschedule_job(value['func'], delay=value['delay'])
 
 
-def recurring_job(every: int):
+def recurring(every: int):
+    """
+    Decorate a coro function to call it every N seconds.
+
+    :param every: number of seconds after which a task will be repeated
+    """
 
     def decorated(func):
 
         jobs[func.__name__] = {
             'func': func,
             'delay': every,
-
         }
 
         async def wrapper(*args):

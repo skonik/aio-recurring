@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "aio-recurring"
+version = "0.1.2"
+description = "Schedule recurring coroutines using asyncio"
+authors = ["Sergey Konik <s.konik.job@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/skonik/aio-recurring"
+repository = "https://github.com/skonik/aio-recurring"
+keywords = ["asyncio"]
+include = [
+    "LICENSE",
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
