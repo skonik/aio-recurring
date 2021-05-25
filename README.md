@@ -1,6 +1,10 @@
 # aio-recurring
 Recurring coroutines using asyncio
 
+## Install
+
+`$ pip install aio-recurring`
+
 ## Usage:
 
 ```python
@@ -8,17 +12,17 @@ import asyncio
 from datetime import datetime
 
 from aio_recurring.job import (
-    recurring_job,
+    recurring,
     run_recurring_jobs,
 )
 
 
-@recurring_job(every=5)
+@recurring(every=5)
 async def print_info_5():
     print(f"[{datetime.now()}] This coroutine is rescheduled every 5 seconds")
 
 
-@recurring_job(every=10)
+@recurring(every=10)
 async def print_info_10():
     print(f"[{datetime.now()}] This coroutine is rescheduled every 10 seconds")
 
