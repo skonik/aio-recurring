@@ -1,18 +1,43 @@
 from asyncio import get_running_loop
+from dataclasses import dataclass
+from typing import Callable, Coroutine
 
 
-def reschedule_job(func, delay, *args):
-    current_loop = get_running_loop()
-    current_loop.create_task(func(*args,))
-    current_loop.call_later(delay, reschedule_job, func, delay, *args)
+@dataclass(eq=True, frozen=True)
+class Job:
+    func: Callable[..., Coroutine]
+    delay: int
 
 
-jobs = dict()
+class Scheduler:
+
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(Scheduler, cls).__new__(cls)
+
+        return cls.instance
+
+    def __init__(self):
+        self._jobs = set()
+
+    def add_job(self, job: Job):
+        self._jobs.add(job)
+
+    def _run_job(self, func, delay, *args):
+        current_loop = get_running_loop()
+        current_loop.create_task(func(*args))
+        current_loop.call_later(delay, self._run_job, func, delay, *args)
+
+    def _run_all_jobs(self):
+        for job in self._jobs:
+            self._run_job(func=job.func, delay=job.delay)
+
+    def run_jobs(self):
+        loop = get_running_loop()
+        loop.call_soon(self._run_all_jobs)
 
 
-def schedule_all_jobs():
-    for _, value in jobs.items():
-        reschedule_job(value['func'], delay=value['delay'])
+scheduler = Scheduler()
 
 
 def recurring(every: int):
@@ -24,10 +49,9 @@ def recurring(every: int):
 
     def decorated(func):
 
-        jobs[func.__name__] = {
-            'func': func,
-            'delay': every,
-        }
+        new_job = Job(func=func, delay=every)
+
+        scheduler.add_job(job=new_job)
 
         async def wrapper(*args):
 
@@ -39,5 +63,6 @@ def recurring(every: int):
 
 
 def run_recurring_jobs():
-    loop = get_running_loop()
-    loop.call_soon(schedule_all_jobs)
+    scheduler.run_jobs()
+
+
